@@ -54,6 +54,7 @@ def rewrite_conn(conn: str, protocol: Optional[str] = None):
 def get_meta(
     conn: str,
     query: str,
+    timeout: int = 30,
     protocol: Optional[str] = None,
 ):
     """
@@ -71,7 +72,7 @@ def get_meta(
 
     """
     conn, protocol = rewrite_conn(conn, protocol)
-    result = _get_meta(conn, protocol, query)
+    result = _get_meta(conn, timeout, protocol, query)
     df = reconstruct_pandas(result)
     return df
 
@@ -117,6 +118,7 @@ def read_sql_pandas(
     partition_on: Optional[str] = None,
     partition_range: Optional[Tuple[int, int]] = None,
     partition_num: Optional[int] = None,
+    timeout: int = 30,
 ):
     """
     Run the SQL query, download the data from database into a dataframe.
@@ -140,6 +142,7 @@ def read_sql_pandas(
     return read_sql(
         con,
         sql,
+        timeout=timeout,
         return_type="pandas",
         protocol=protocol,
         partition_on=partition_on,
@@ -152,6 +155,7 @@ def read_sql_pandas(
 def read_sql(
     conn: Union[str, Dict[str, str]],
     query: Union[List[str], str],
+    timeout: int = 30,
     *,
     return_type: str = "pandas",
     protocol: Optional[str] = None,
@@ -263,6 +267,7 @@ def read_sql(
 
         result = _read_sql(
             conn,
+            timeout,
             "pandas",
             queries=queries,
             protocol=protocol,
