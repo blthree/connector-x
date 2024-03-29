@@ -12,6 +12,7 @@ use crate::{
     utils::DummyBox,
 };
 use chrono::{DateTime, NaiveDate, NaiveDateTime, Utc};
+use core::time::Duration;
 use fehler::{throw, throws};
 use log::debug;
 use owning_ref::OwningHandle;
@@ -76,8 +77,10 @@ impl OracleSource {
         let conn = Url::parse(conn)?;
         let connector = connect_oracle(&conn)?;
         let manager = OracleConnectionManager::from_connector(connector);
+        let timeout_duration = Duration::new(1, 0);
         let pool = r2d2::Pool::builder()
             .max_size(nconn as u32)
+            .connection_timeout(timeout_duration)
             .build(manager)?;
 
         Self {
