@@ -21,6 +21,7 @@ pub fn get_arrow2(
     source_conn: &SourceConn,
     origin_query: Option<String>,
     queries: &[CXQuery<String>],
+    timeout: &usize
 ) -> Arrow2Destination {
     let mut destination = Arrow2Destination::new();
     let protocol = source_conn.proto.as_str();
@@ -200,7 +201,7 @@ pub fn get_arrow2(
         }
         #[cfg(feature = "src_oracle")]
         SourceType::Oracle => {
-            let source = OracleSource::new(&source_conn.conn[..], queries.len())?;
+            let source = OracleSource::new(&source_conn.conn[..], queries.len(), timeout)?;
             let dispatcher = Dispatcher::<_, _, OracleArrow2Transport>::new(
                 source,
                 &mut destination,

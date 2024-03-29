@@ -34,6 +34,7 @@ impl Into<PartitionQuery> for PyPartitionQuery {
 pub fn read_sql<'a>(
     py: Python<'a>,
     conn: &str,
+    timeout: &usize,
     return_type: &str,
     protocol: Option<&str>,
     queries: Option<Vec<String>>,
@@ -62,18 +63,21 @@ pub fn read_sql<'a>(
             &source_conn,
             origin_query,
             &queries,
+            timeout,
         )?),
         "arrow" => Ok(crate::arrow::write_arrow(
             py,
             &source_conn,
             origin_query,
             &queries,
+            timeout,
         )?),
         "arrow2" => Ok(crate::arrow2::write_arrow(
             py,
             &source_conn,
             origin_query,
             &queries,
+            timeout,
         )?),
         _ => Err(PyValueError::new_err(format!(
             "return type should be 'pandas' or 'arrow', got '{}'",

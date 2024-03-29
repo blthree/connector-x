@@ -19,8 +19,9 @@ pub fn write_arrow<'a>(
     source_conn: &SourceConn,
     origin_query: Option<String>,
     queries: &[CXQuery<String>],
+    timeout: &usize
 ) -> &'a PyAny {
-    let destination = get_arrow2(source_conn, origin_query, queries)?;
+    let destination = get_arrow2(source_conn, origin_query, queries, timeout)?;
     let (rbs, schema) = destination.arrow()?;
     let ptrs = to_ptrs(rbs, schema);
     let obj: PyObject = ptrs.into_py(py);

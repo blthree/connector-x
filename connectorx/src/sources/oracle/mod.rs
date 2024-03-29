@@ -73,11 +73,11 @@ pub fn connect_oracle(conn: &Url) -> Connector {
 
 impl OracleSource {
     #[throws(OracleSourceError)]
-    pub fn new(conn: &str, nconn: usize) -> Self {
+    pub fn new(conn: &str, nconn: usize, timeout: &usize) -> Self {
         let conn = Url::parse(conn)?;
         let connector = connect_oracle(&conn)?;
         let manager = OracleConnectionManager::from_connector(connector);
-        let timeout_duration = Duration::new(1, 0);
+        let timeout_duration = Duration::new(*timeout as u64, 0);
         let pool = r2d2::Pool::builder()
             .max_size(nconn as u32)
             .connection_timeout(timeout_duration)

@@ -43,12 +43,13 @@ fn connectorx(_: Python, m: &PyModule) -> PyResult<()> {
 pub fn read_sql<'a>(
     py: Python<'a>,
     conn: &str,
+    timeout: usize,
     return_type: &str,
     protocol: Option<&str>,
     queries: Option<Vec<String>>,
     partition_query: Option<read_sql::PyPartitionQuery>,
 ) -> PyResult<&'a PyAny> {
-    read_sql::read_sql(py, conn, return_type, protocol, queries, partition_query)
+    read_sql::read_sql(py, conn, &timeout, return_type, protocol, queries, partition_query)
 }
 
 #[pyfunction]
@@ -88,9 +89,10 @@ pub fn read_sql2<'a>(
 pub fn get_meta<'a>(
     py: Python<'a>,
     conn: &str,
+    timeout: usize,
     protocol: Option<&str>,
     query: String,
 ) -> PyResult<&'a PyAny> {
-    pandas::get_meta::get_meta(py, conn, protocol.unwrap_or("binary"), query)
+    pandas::get_meta::get_meta(py, conn, protocol.unwrap_or("binary"), query, &timeout)
         .map_err(|e| From::from(e))
 }

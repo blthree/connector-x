@@ -38,6 +38,7 @@ pub fn write_pandas<'a>(
     source_conn: &SourceConn,
     origin_query: Option<String>,
     queries: &[CXQuery<String>],
+    timeout: &usize,
 ) -> &'a PyAny {
     let mut destination = PandasDestination::new(py);
     let protocol = source_conn.proto.as_str();
@@ -210,7 +211,7 @@ pub fn write_pandas<'a>(
             dispatcher.run()?;
         }
         SourceType::Oracle => {
-            let source = OracleSource::new(&source_conn.conn[..], queries.len())?;
+            let source = OracleSource::new(&source_conn.conn[..], queries.len(), timeout)?;
             let dispatcher = Dispatcher::<_, _, OraclePandasTransport>::new(
                 source,
                 &mut destination,

@@ -25,6 +25,7 @@ pub fn get_arrow(
     source_conn: &SourceConn,
     origin_query: Option<String>,
     queries: &[CXQuery<String>],
+    timeout: &usize,
 ) -> ArrowDestination {
     let mut destination = ArrowDestination::new();
     let protocol = source_conn.proto.as_str();
@@ -204,7 +205,7 @@ pub fn get_arrow(
         }
         #[cfg(feature = "src_oracle")]
         SourceType::Oracle => {
-            let source = OracleSource::new(&source_conn.conn[..], queries.len())?;
+            let source = OracleSource::new(&source_conn.conn[..], queries.len(), timeout)?;
             let dispatcher = Dispatcher::<_, _, OracleArrowTransport>::new(
                 source,
                 &mut destination,
@@ -240,6 +241,7 @@ pub fn new_record_batch_iter(
     origin_query: Option<String>,
     queries: &[CXQuery<String>],
     batch_size: usize,
+    timeout: &usize
 ) -> Box<dyn RecordBatchIterator> {
     let destination = ArrowStreamDestination::new_with_batch_size(batch_size);
     let protocol = source_conn.proto.as_str();
@@ -399,7 +401,7 @@ pub fn new_record_batch_iter(
         }
         #[cfg(feature = "src_oracle")]
         SourceType::Oracle => {
-            let source = OracleSource::new(&source_conn.conn[..], queries.len()).unwrap();
+            let source = OracleSource::new(&source_conn.conn[..], queries.len(), timeout).unwrap();
             let batch_iter = ArrowBatchIter::<_, OracleArrowStreamTransport>::new(
                 source,
                 destination,

@@ -30,7 +30,7 @@ use std::convert::TryFrom;
 use std::sync::Arc;
 
 #[throws(ConnectorXPythonError)]
-pub fn get_meta<'a>(py: Python<'a>, conn: &str, protocol: &str, query: String) -> &'a PyAny {
+pub fn get_meta<'a>(py: Python<'a>, conn: &str, protocol: &str, query: String, timeout: &usize) -> &'a PyAny {
     let source_conn = SourceConn::try_from(conn)?;
     let mut destination = PandasDestination::new(py);
     let queries = &[CXQuery::Naked(query)];
@@ -201,7 +201,7 @@ pub fn get_meta<'a>(py: Python<'a>, conn: &str, protocol: &str, query: String) -
             dispatcher.get_meta()?;
         }
         SourceType::Oracle => {
-            let source = OracleSource::new(&source_conn.conn[..], 1)?;
+            let source = OracleSource::new(&source_conn.conn[..], 1, timeout)?;
             let mut dispatcher = Dispatcher::<_, _, OraclePandasTransport>::new(
                 source,
                 &mut destination,
