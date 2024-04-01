@@ -103,11 +103,11 @@ benchmark-report: setup-python
 # releases
 build-python-wheel:
     # need to get the j4rs dependency first
-    cd connectorx-python && maturin build --release -i python
+    cd connectorx-python && source $(poetry env info --path)/bin/activate && maturin build --release -i python --manylinux 2_28 --features integrated-auth-gssapi
     # copy files
     cp -rf connectorx-python/target/release/jassets connectorx-python/connectorx/dependencies
     # build final wheel
-    cd connectorx-python && maturin build --release -i python
+    cd connectorx-python && source $(poetry env info --path)/bin/activate && maturin build --release -i python --manylinux 2_28 --features integrated-auth-gssapi
 
 bench-fed path:
     just python-tpch fed --file {{path}}/q2.sql
